@@ -7,11 +7,11 @@ with open(path.join(this_folder,'README.md'),encoding='utf-8') as inf:
   long_description = inf.read()
 
 setup(
-  name='imagetestdata',
+  name='pythologisttestimages',
   version='0.1.0',
-  description='Python interface to simulate outputs of the PerkinElmer inForm software',
+  description='Real and simulated data for testing image analysis software',
   long_description=long_description,
-  url='https://github.com/jason-weirather/image-test-data',
+  url='https://github.com/jason-weirather/pythologist-test-images',
   author='Jason L Weirather',
   author_email='jason.weirather@gmail.com',
   license='Apache License, Version 2.0',
@@ -22,6 +22,6 @@ setup(
     'License :: OSI Approved :: Apache Software License'
   ],
   keywords='bioinformatics',
-  packages=['imagetestdata'],
+  packages=['pythologisttestimages'],
   install_requires=[],
 )
