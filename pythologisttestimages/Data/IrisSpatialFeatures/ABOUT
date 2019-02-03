@@ -1,0 +1,5 @@
+Text data and tumor/margin annotation tifs are from IrisSpatialFeatures
+https://github.com/gusef/IrisSpatialFeatures
+
+Binary seg data is simulated by 
+https://github.com/jason-weirather/multiplex-if-simulator
