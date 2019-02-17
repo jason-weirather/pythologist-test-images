@@ -1,0 +1,188 @@
+---
+title: "Extract R analyses"
+author: "Jason L Weirather"
+date: "2/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(IrisSpatialFeatures)
+```
+
+## Read Data
+
+```{r}
+data <- read_raw('Example-R',
+                 readTumorAndMarginMasks=TRUE,
+                 verbose=TRUE,
+                 invasive_margin_in_px=20)
+```
+
+## Threshold data
+```{r}
+data1 <- threshold_dataset(data,'PD-Ligand-1 (Opal 690)','PDL1',c('SOX10+','OTHER'))
+data1 <- threshold_dataset(data1,'PD-Ligand-1 (Opal 690)','PD1','CD8+')
+```
+
+
+```{r}
+tumor <- extract_ROI(data1,'tumor')
+invasive_margin <- extract_ROI(data1,'invasive_margin')
+```
+
+## Lets do counts first
+
+#### Frame counts
+
+```{r}
+tcnt <- counts_per_mm2_data_frame(tumor)
+tcnt$region_label = 'Tumor'
+icnt <- counts_per_mm2_data_frame(invasive_margin)
+icnt$region_label = 'Margin'
+cnt <- tcnt  %>% rbind(icnt) %>% 
+  rename(phenotype_label=marker,
+         density_mm2=density,
+         sample_name=sample,
+         frame_name=frame)
+cntw <- counts_per_mm2_data_frame(data1)
+cntw$region_label <- 'Any'
+cntw <- cntw %>% 
+  rename(phenotype_label=marker,
+         density_mm2=density,
+         sample_name=sample,
+         frame_name=frame)
+```
+
+```{r}
+write.csv(cnt,'results-tumor-margin-R/frame_counts.csv',row.names=FALSE)
+write.csv(cntw,'results-whole-slide-R/frame_counts.csv',row.names=FALSE)
+```
+
+```{r}
+tcnt <- counts_per_mm2_sample_data_frame(tumor)
+tcnt$region_label = 'Tumor'
+icnt <- counts_per_mm2_sample_data_frame(invasive_margin)
+icnt$region_label = 'Margin'
+cnt <- tcnt %>% rbind(icnt) %>% 
+  rename(phenotype_label=marker,
+         mean_density_mm2=mean_density,
+         sample_name=sample,
+         stddev_density_mm2=stddev,
+         stderr_density_mm2=stderr)
+cntw <- counts_per_mm2_sample_data_frame(data1)
+cntw$region_label <- 'Any'
+cntw <- cntw %>% 
+  rename(phenotype_label=marker,
+         mean_density_mm2=mean_density,
+         sample_name=sample,
+         stddev_density_mm2=stddev,
+         stderr_density_mm2=stderr)
+```
+
+```{r}
+write.csv(cnt,'results-tumor-margin-R/sample_counts.csv',row.names=FALSE)
+write.csv(cntw,'results-whole-slide-R/sample_counts.csv',row.names=FALSE)
+```
+
+## Nearest neighbors
+
+```{r}
+tnn <- extract_nearest_neighbor(tumor,min_num_cells=20)
+inn <- extract_nearest_neighbor(invasive_margin,min_num_cells=20)
+tnn <- aggregated_nn_data_frame(tnn)
+tnn$region_label <- 'Tumor'
+#snn <- aggregated_nn_data_frame(snn)
+#snn$region_label <- 'Stroma'
+inn <- aggregated_nn_data_frame(inn)
+inn$region_label <- 'Margin'
+nn <- tnn %>% rbind(inn) %>% 
+  rename(sample_name=sample,
+         phenotype_label=markerA,
+         neighbor_phenotype_label=markerB,
+         mean_distance_um=mean,
+         stderr_distance_um=SE) %>% select(-units)
+nnw <- extract_nearest_neighbor(data1,min_num_cells=20) 
+nnw <- aggregated_nn_data_frame(nnw)
+nnw$region_label <- 'Any'
+nnw <- nnw %>% 
+  rename(sample_name=sample,
+         phenotype_label=markerA,
+         neighbor_phenotype_label=markerB,
+         mean_distance_um=mean,
+         stderr_distance_um=SE) %>% select(-units)
+```
+
+```{r}
+write.csv(nn,'results-tumor-margin-R/sample_nn.csv',row.names=FALSE)
+write.csv(nnw,'results-whole-slide-R/sample_nn.csv',row.names=FALSE)
+```
+
+## contacts
+
+```{r}
+tnn <- extract_interactions(tumor)
+inn <- extract_interactions(invasive_margin)
+tnn <- interaction_proportion_data_frame(tnn)
+tnn$region_label <- 'Tumor'
+#snn <- interaction_proportion_data_frame(snn)
+#snn$region_label <- 'Stroma'
+inn <- interaction_proportion_data_frame(inn)
+inn$region_label <- 'Margin'
+contacts <- tnn  %>% rbind(inn) %>% 
+  rename(sample_name=sample,
+         phenotype_label=reference_phenotype,
+         neighbor_phenotype_label=neighbor_phenotype,
+        fraction=proportion) 
+nnw <- extract_interactions(data1) 
+nnw <- interaction_proportion_data_frame(nnw)
+nnw$region_label <- 'Any'
+contactsw <- nnw %>%
+  rename(sample_name=sample,
+         phenotype_label=reference_phenotype,
+         neighbor_phenotype_label=neighbor_phenotype,
+        fraction=proportion) 
+
+```
+
+```{r}
+write.csv(contacts,'results-tumor-margin-R/sample_contact_fractions.csv',row.names=FALSE)
+write.csv(contactsw,'results-whole-slide-R/sample_contact_fractions.csv',row.names=FALSE)
+```
+
+```{r}
+tnn <- extract_interactions(tumor)
+inn <- extract_interactions(invasive_margin)
+tnn <- interaction_counts_sample_data_frame(tnn)
+tnn$region_label <- 'Tumor'
+#snn <- interaction_counts_sample_data_frame(snn)
+#snn$region_label <- 'Stroma'
+inn <- interaction_counts_sample_data_frame(inn)
+inn$region_label <- 'Margin'
+contacts <- tnn  %>% rbind(inn) %>% 
+  rename(sample_name=sample,
+         phenotype_label=reference_phenotype,
+         neighbor_phenotype_label=neighbor_phenotype,
+         cummulative_count = total_interactions,
+         mean_interaction_density_mm2 = mean_interactions_per_mm2,
+         stderr_interaction_density_mm2 = stderr_interactions_per_mm2) 
+contactsw <- extract_interactions(data1)
+contactsw <- interaction_counts_sample_data_frame(contactsw)
+contactsw$region_label <- 'Any'
+contactsw <- contactsw %>% 
+  rename(sample_name=sample,
+         phenotype_label=reference_phenotype,
+         neighbor_phenotype_label=neighbor_phenotype,
+         cummulative_count = total_interactions,
+         mean_interaction_density_mm2 = mean_interactions_per_mm2,
+         stderr_interaction_density_mm2 = stderr_interactions_per_mm2) 
+```
+
+```{r}
+write.csv(contacts,'results-tumor-margin-R/sample_contact_density.csv',row.names=FALSE)
+write.csv(contacts,'results-whole-slide-R/sample_contact_density.csv',row.names=FALSE)
+```
+
+
+
