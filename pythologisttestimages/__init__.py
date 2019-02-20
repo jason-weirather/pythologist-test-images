@@ -1,21 +1,26 @@
 import os
-import pythologisttestimages
-from tempfile import TemporaryDirectory
-from pythologist.formats.inform.sets import CellProjectInForm
+from pythologistreader.formats.inform.custom import CellProjectInFormLineArea
+from pythologistreader.formats.inform.sets import CellProjectInForm
 class TestImages(object):
     def __init__(self):
-        path = os.path.dirname(pythologisttestimages.__file__)
-        self._datadir = os.path.join(path,'Data')
+        self.base = os.path.abspath(os.path.join(__file__,'../../data'))
         return
     @property
-    def datasets(self):
-        dirs = []
-        for file in os.listdir(self._datadir):
-            if not os.path.isdir(os.path.join(self._datadir,file)): 
-                continue
-            dirs.append(file)
-        return dirs
-    def get_path(self,dataset):
-        return os.path.join(self._datadir,dataset,'Example')
-    def get_pythologist(self,dataset):
-        return os.path.join(self._datadir,dataset,'pythologist.h5')
+    def paths(self):
+        return {
+            'IrisSpatialFeatures':os.path.join(self.base,'IrisSpatialFeatures','Example'),
+            'Small':os.path.join(self.base,'Small','Example'),
+            'Tiny':os.path.join(self.base,'Tiny','Example'),
+        }
+    def pythologist(self,key):
+        d = {
+            'IrisSpatialFeatures':
+                    os.path.join(self.base,'IrisSpatialFeatures','pythologist-tumor-margin.h5'),
+            'Small':os.path.join(self.base,'Small','pythologist.h5'),
+            'Tiny':os.path.join(self.base,'Tiny','pythologist_tiny.h5')
+        }
+        if key not in d: raise ValueError("Must pick a key in "+str([x for x in d.keys()])) 
+        if key == 'IrisSpatialFeatures':
+            return CellProjectInFormLineArea(d[key],mode='r')
+        else:
+            return CellProjectInForm(d[key],mode='r')
