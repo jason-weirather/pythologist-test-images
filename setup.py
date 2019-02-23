@@ -25,6 +25,6 @@ setup(
   packages=['pythologisttestimages'],
   extras_require={
     'h5':['pythologistreader','pythologist']
-  }
+  },
   install_requires=[],
 )
