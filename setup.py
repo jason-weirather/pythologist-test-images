@@ -7,7 +7,7 @@ with open(path.join(this_folder,'README.md'),encoding='utf-8') as inf:
   long_description = inf.read()
 
 setup(
-  name='pythologisttestimages',
+  name='pythologist-test-images',
   version='1.0.0',
   description='Real and simulated data for testing image analysis software',
   long_description=long_description,
@@ -22,7 +22,7 @@ setup(
     'License :: OSI Approved :: Apache Software License'
   ],
   keywords='bioinformatics',
-  packages=['pythologisttestimages'],
+  packages=['pythologist_test_images'],
   extras_require={
     'h5':['pythologistreader','pythologist']
   },

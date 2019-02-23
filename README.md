@@ -5,7 +5,7 @@ Images for use in unit tests etc.
 List available datasets:
 
 ```python
-from pythologisttestimages import TestImages
+from pythologist_test_images import TestImages
 
 print(TestImages().datasets)
 ```
