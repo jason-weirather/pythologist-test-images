@@ -17,7 +17,7 @@ library(IrisSpatialFeatures)
 data <- read_raw('Example-R',
                  readTumorAndMarginMasks=TRUE,
                  verbose=TRUE,
-                 invasive_margin_in_px=20)
+                 invasive_margin_in_px=76)
 ```
 
 ## Threshold data

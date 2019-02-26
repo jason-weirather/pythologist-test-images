@@ -23,8 +23,8 @@ class TestImages(object):
         return self._paths[dataset]
 
     def project(self,dataset):
-        from pythologistreader.formats.inform.custom import CellProjectInFormLineArea
-        from pythologistreader.formats.inform.sets import CellProjectInForm
+        from pythologist_reader.formats.inform.custom import CellProjectInFormLineArea
+        from pythologist_reader.formats.inform.sets import CellProjectInForm
         if dataset == 'IrisSpatialFeatures':
             return CellProjectInFormLineArea(os.path.join(self.base,'IrisSpatialFeatures','pythologist.h5'))
         return CellProjectInForm(os.path.join(self.base,dataset,'pythologist.h5'))
