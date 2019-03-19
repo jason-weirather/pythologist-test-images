@@ -33,3 +33,7 @@ class TestImages(object):
         from pythologist import CellDataFrame
         cdf = CellDataFrame.read_hdf(os.path.join(self.base,dataset,'pythologist.cdf.h5'),'data')
         return cdf
+    @property
+    def r_irisspatialfeatures_path(self):
+        return os.path.join(self.base,'IrisSpatialFeatures','results-tumor-margin-R')
+    

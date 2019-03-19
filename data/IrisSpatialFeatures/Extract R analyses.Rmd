@@ -23,7 +23,7 @@ data <- read_raw('Example-R',
 ## Threshold data
 ```{r}
 data1 <- threshold_dataset(data,'PD-Ligand-1 (Opal 690)','PDL1',c('SOX10+','OTHER'))
-data1 <- threshold_dataset(data1,'PD-Ligand-1 (Opal 690)','PD1','CD8+')
+data1 <- threshold_dataset(data1,'PD-1 (Opal 540)','PD1','CD8+')
 ```
 
 
