@@ -8,7 +8,7 @@ with open(path.join(this_folder,'README.md'),encoding='utf-8') as inf:
 
 setup(
   name='pythologist-test-images',
-  version='1.0.0',
+  version='1.0.1',
   description='Real and simulated data for testing image analysis software',
   long_description=long_description,
   url='https://github.com/jason-weirather/pythologist-test-images',
